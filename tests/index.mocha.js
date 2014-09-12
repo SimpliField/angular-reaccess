@@ -48,7 +48,7 @@ describe('sfReaccess', function () {
         module('fakeApp');
       });
 
-      it('should not give access to unmatched pathes',
+      it('should return false for unmatched pathes',
         inject(function($filter, sfReaccessService) {
         
         sfReaccessService.setRights([{
@@ -60,7 +60,7 @@ describe('sfReaccess', function () {
 
       }));
 
-      it('should not give access to unmatched methods',
+      it('should return false for unmatched methods',
         inject(function($filter, sfReaccessService) {
         
         sfReaccessService.setRights([{
@@ -69,6 +69,18 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), false);
+
+      }));
+
+      it('should return true if everything match',
+        inject(function($filter, sfReaccessService) {
+        
+        sfReaccessService.setRights([{
+          path: '/foo',
+          methods: ['OPTIONS', 'HEAD', 'GET']
+        }]);
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), true);
 
       }));
 

@@ -84,7 +84,20 @@ sfReaccessService.setValues([{
   _id: 1,
   organisation_id: 1
 }]);
- ```
+```
+
+## Contribute
+To contribute to this project, first run the following to setup the development
+ environment:
+```sh
+npm install
+bower install
+```
+
+Then, run the tests and debug with Karma:
+```sh
+npm run dev
+```
 
 ## Note for Express users
 

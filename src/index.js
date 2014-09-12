@@ -17,17 +17,34 @@ angular.module('simplifield.reaccess', [])
       setValues: function sfReaccessServiceSetValues(values) {
         currentValues = values;
       },
-    
+      test: function sfReaccessServiceTest(predefinedRight) {
+        var right = predefinedRights[predefinedRight];
+        if((!right) || 'undefined' == typeof right.path
+          || 'undefined' == typeof right.methods
+          || !right.methods.length) {
+          return false;
+        }
+        if(currentRights.some(function(currentRight) {
+          return right.path == currentRight.path && right.methods.every(function(method) {
+            return -1 !== currentRight.methods.indexOf(method);
+          });
+        })) {
+          return true;
+        }
+        return false;
+      }
     };
 
     return sfReaccessService;
   };
-}).filter('sfReaccess', ['sfReaccessService', function () {
-  return function(rights, templateValues) {
-    rights = rights || [];
-    if(!(rights instanceof Array)) {
-      rights = [rights];
+}).filter('sfReaccess', ['sfReaccessService', function (sfReaccessService) {
+  return function(predefinedRights, templateValues) {
+    predefinedRights = predefinedRights || [];
+    if(!(predefinedRights instanceof Array)) {
+      predefinedRights = [predefinedRights];
     }
-    return false;
+    return predefinedRights.every(function(predefinedRight) {
+      return sfReaccessService.test(predefinedRight);
+    });
   };
 }]);

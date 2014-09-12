@@ -28,7 +28,7 @@ IT will display add/edit/delete buttons depending on the user rights comparing
 Predefined rights are set in your application configuration like this:
  ```js
 angular.module('myApp')
-  .config(['$sfReaccessServiceProvider', 'profileService', function($sfReaccessServiceProvider) {
+  .config(['sfReaccessServiceProvider', 'profileService', function(sfReaccessServiceProvider) {
 
     // Setting templated rights
     $sfReaccessServiceProvider.setPredefinedRights({

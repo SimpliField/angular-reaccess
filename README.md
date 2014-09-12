@@ -8,47 +8,83 @@ Consider the following template:
 
 ```html
 <button
-  ng-show="'ADD_USER' | sfReaccess"
+  ng-show="'USER_ADD' | sfReaccess"
   ng-click="addUser()">Add a user</button>
 
 <div ng-repeat="user in users">
   {{ user.name }}
   <button
-    ng-show="'EDIT_USER' | sfReaccess:user"
+    ng-show="'USER_EDIT' | sfReaccess:user"
     ng-click="editUser(user)">Edit this user</button>
   <button
-    ng-show="DELETE_USER' | sfReaccess:user"
+    ng-show="USER_DELETE' | sfReaccess:user"
     ng-click="removeUser(user)">Delete this user</button>
 </div>
 ```
 
-IT will display add/edit/delete buttons depending on the user rights. Those are
- set in your application configuration like this:
+IT will display add/edit/delete buttons depending on the user rights comparing
+ to the methods and pathes set for the given predefined rights.
 
+Predefined rights are set in your application configuration like this:
  ```js
 angular.module('myApp')
-  .config(['$sfReaccessProvider', '$q', function($sfReaccessProvider) {
+  .config(['$sfReaccessServiceProvider', 'profileService', function($sfReaccessServiceProvider) {
 
     // Setting templated rights
-    $sfReaccessProvider.setPredefinedRights({
-      'ADD_USER':  [{
+    $sfReaccessServiceProvider.setPredefinedRights({
+      'USER_ADD':  [{
         path: '/users/:id',
         rights: ['GET', 'POST']
       }],
-      'EDIT_USER':[{
+      'USER_EDIT':[{
         path: '/users/:id',
         rights: ['PUT']
       }],
-      'DELETE_USER':  [{
+      'USER_DELETE':  [{
         path: '/users/:id',
         rights: ['GET', 'DELETE']
       }]
     });
 
-    // Setting how connected user rights are retrieved
-    $sfReaccessProvider.setRightsSource(profileService.getRights);
   }]);
 ```
+
+User rights are set by using the `sfReaccessService.setRights()` method,
+ they look like this:
+```js
+sfReaccessService.setRights([{
+  path: "/users/:_id/?.*",
+  methods: [
+    "OPTIONS",
+    "HEAD",
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE"
+  ]
+},{
+  path: "/organisations/:organisation_id/?.*",
+  methods: [
+    "OPTIONS",
+    "HEAD",
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE"
+  ]
+}]);
+```
+
+Path values are templated regular expressions. To set objects where to search
+ for template expressions values, use `sfReaccessService.setValues()`:
+```js
+sfReaccessService.setValues([{
+  _id: 1,
+  organisation_id: 1
+}]);
+ ```
 
 ## Note for Express users
 

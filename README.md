@@ -32,18 +32,18 @@ angular.module('myApp')
 
     // Setting templated rights
     $sfReaccessServiceProvider.setPredefinedRights({
-      'USER_ADD':  [{
+      'USER_ADD':  {
         path: '/users/:id',
-        rights: ['GET', 'POST']
-      }],
-      'USER_EDIT':[{
+        methods: ['GET', 'POST']
+      },
+      'USER_EDIT':{
         path: '/users/:id',
-        rights: ['PUT']
-      }],
-      'USER_DELETE':  [{
+        methods: ['PUT']
+      },
+      'USER_DELETE':  {
         path: '/users/:id',
-        rights: ['GET', 'DELETE']
-      }]
+        methods: ['GET', 'DELETE']
+      }
     });
 
   }]);

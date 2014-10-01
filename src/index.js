@@ -30,8 +30,8 @@ angular.module('simplifield.reaccess', [])
         while(/(.*\/|^):([a-z0-9_\-\.\*\@\#]+)(\/.*|$)/.test(rightPath)) {
           rightPath = rightPath.replace(/(.*\/|^):([a-z0-9_\-\.\*\@\#]+)(\/.*|$)/,
             function($, $1, $2, $3) {
-              var values = getValues(currentValues, $2);
-              //console.log('rightPath values', values, currentValues, $2)
+              var values = getValues(templateValues, $2);
+              //console.log('rightPath values', values, templateValues, $2)
               if(values.length) {
                 return $1 + values[0] + $3;
               }
@@ -78,7 +78,11 @@ angular.module('simplifield.reaccess', [])
       predefinedRights = [predefinedRights];
     }
     return predefinedRights.every(function(predefinedRight) {
-      return sfReaccessService.test(predefinedRight, templateValues);
+      return sfReaccessService.test(
+        predefinedRight,
+        (templateValues instanceof Array ? templateValues :
+          (templateValues ? [templateValues] : []))
+      );
     });
   };
 }]);

@@ -86,7 +86,8 @@ angular.module('simplifield.reaccess', ['ng'])
           result = path && new RegExp('^'+path+'$').test(rightPath)
           if(debug) {
             $log.debug('sfReaccess: ' + predefinedRight + ': ' + i + ': Testing "' +
-              + rightPath + '" against "/^'+path+'$/" returned', result);
+              rightPath + '" against "/^' + path.replace('/', '\\/') + '$/"' +
+              ' led to ', result ? 'SUCCESS' : 'FAILURE');
           }
           return result;
         })) {

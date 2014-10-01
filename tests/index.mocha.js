@@ -81,7 +81,7 @@ describe('sfReaccess', function () {
 
       it('should return false for unmatched pathes',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foot',
           methods: ['OPTIONS', 'HEAD', 'GET']
@@ -99,7 +99,7 @@ describe('sfReaccess', function () {
 
       it('should return false for unmatched methods',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foo',
           methods: ['HEAD', 'GET']
@@ -117,7 +117,7 @@ describe('sfReaccess', function () {
 
       it('should return true if everything match',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foo',
           methods: ['OPTIONS', 'HEAD', 'GET']
@@ -129,6 +129,56 @@ describe('sfReaccess', function () {
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), true);
         assert.equal($log.error.logs.length, 0);
         assert.equal($log.debug.logs.length, 2);
+        $log.reset();
+
+      }));
+
+    });
+
+    describe('with several rights in filter input', function() {
+
+      beforeEach(function() {
+        // Creating a fake app
+        angular.module('fakeApp', ['simplifield.reaccess'])
+          .config(function(sfReaccessServiceProvider) {
+            sfReaccessServiceProvider.setPredefinedRights({
+              'A_SIMPLE_RIGHT': {
+                'path': '/foo',
+                methods: ['OPTIONS', 'HEAD', 'GET']
+              },
+              'ANOTHER_SIMPLE_RIGHT': {
+                'path': '/bar',
+                methods: ['OPTIONS', 'HEAD', 'GET']
+              }
+            });
+          });
+
+        module('fakeApp');
+      });
+
+      it('should return true if everything match',
+        inject(function($filter, $log, sfReaccessService) {
+
+        sfReaccessService.setRights([{
+          path: '/foo',
+          methods: ['OPTIONS', 'HEAD', 'GET']
+        }, {
+          path: '/bar',
+          methods: ['OPTIONS', 'HEAD', 'GET']
+        }]);
+
+        assert.equal($filter('sfReaccess')([
+          'A_SIMPLE_RIGHT',
+          'ANOTHER_SIMPLE_RIGHT'
+        ]), true);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')([
+          'A_SIMPLE_RIGHT',
+          'ANOTHER_SIMPLE_RIGHT'
+        ], undefined, true), true);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 4);
         $log.reset();
 
       }));
@@ -166,12 +216,12 @@ describe('sfReaccess', function () {
 
       it('should return false for unmatched pathes',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foot/2',
           methods: ['OPTIONS', 'HEAD', 'GET']
         }]);
-        
+
         sfReaccessService.setValues([{
           id: 1
         }]);
@@ -188,12 +238,12 @@ describe('sfReaccess', function () {
 
       it('should return false for unmatched methods',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foo/1',
           methods: ['HEAD', 'GET']
         }]);
-        
+
         sfReaccessService.setValues([{
           id: 1
         }]);
@@ -210,12 +260,12 @@ describe('sfReaccess', function () {
 
       it('should return true if everything match',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foo/:id',
           methods: ['OPTIONS', 'HEAD', 'GET']
         }]);
-        
+
         sfReaccessService.setValues([{
           id: 1
         }]);
@@ -232,12 +282,12 @@ describe('sfReaccess', function () {
 
       it('should return true with a templated right if everything match',
         inject(function($filter, $log, sfReaccessService) {
-        
+
         sfReaccessService.setRights([{
           path: '/foo/:id',
           methods: ['OPTIONS', 'HEAD', 'GET']
         }]);
-        
+
         sfReaccessService.setValues([{
           id: 1
         }]);

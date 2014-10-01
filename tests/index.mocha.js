@@ -23,10 +23,41 @@ describe('sfReaccess', function () {
       beforeEach(module('simplifield.reaccess'));
 
       it('should return false',
-        inject(function($filter) {
+        inject(function($filter, $log) {
 
         assert.equal($filter('sfReaccess')('PLOP_PLOP'), false);
+        $log.assertEmpty();
 
+        assert.equal($filter('sfReaccess')('PLOP_PLOP', undefined, true), false);
+        assert.equal($log.error.logs.length, 1);
+        assert.equal($log.debug.logs.length, 1);
+        $log.reset();
+      }));
+
+      it('should provide debug infos in local debug mode',
+        inject(function($filter, $log) {
+      }));
+
+    });
+
+    describe('with global debug', function() {
+
+      beforeEach(function() {
+        // Creating a fake app
+        angular.module('fakeApp', ['simplifield.reaccess'])
+          .config(function(sfReaccessServiceProvider) {
+            sfReaccessServiceProvider.debug(true);
+          });
+
+        module('fakeApp');
+      });
+
+      it('should provide debug infos',
+        inject(function($filter, $log) {
+        assert.equal($filter('sfReaccess')('PLOP_PLOP'), false);
+        assert.equal($log.error.logs.length, 1);
+        assert.equal($log.debug.logs.length, 1);
+        $log.reset();
       }));
 
     });
@@ -49,7 +80,7 @@ describe('sfReaccess', function () {
       });
 
       it('should return false for unmatched pathes',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foot',
@@ -57,11 +88,17 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), false);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), false);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 2);
+        $log.reset();
 
       }));
 
       it('should return false for unmatched methods',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foo',
@@ -69,11 +106,17 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), false);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), false);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 2);
+        $log.reset();
 
       }));
 
       it('should return true if everything match',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foo',
@@ -81,6 +124,12 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), true);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), true);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 2);
+        $log.reset();
 
       }));
 
@@ -116,7 +165,7 @@ describe('sfReaccess', function () {
       });
 
       it('should return false for unmatched pathes',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foot/2',
@@ -128,11 +177,17 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), false);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), false);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 2);
+        $log.reset();
 
       }));
 
       it('should return false for unmatched methods',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foo/1',
@@ -144,11 +199,17 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), false);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), false);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 2);
+        $log.reset();
 
       }));
 
       it('should return true if everything match',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foo/:id',
@@ -160,11 +221,17 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT'), true);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_SIMPLE_RIGHT', undefined, true), true);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 3);
+        $log.reset();
 
       }));
 
       it('should return true with a templated right if everything match',
-        inject(function($filter, sfReaccessService) {
+        inject(function($filter, $log, sfReaccessService) {
         
         sfReaccessService.setRights([{
           path: '/foo/:id',
@@ -176,6 +243,13 @@ describe('sfReaccess', function () {
         }]);
 
         assert.equal($filter('sfReaccess')('A_TEMPLATED_RIGHT', {id: 1}), true);
+        $log.assertEmpty();
+
+
+        assert.equal($filter('sfReaccess')('A_TEMPLATED_RIGHT', {id: 1}, true), true);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 4);
+        $log.reset();
 
       }));
 

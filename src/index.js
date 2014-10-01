@@ -1,15 +1,20 @@
-angular.module('simplifield.reaccess', [])
+angular.module('simplifield.reaccess', ['ng'])
   .provider('sfReaccessService', function SFReaccessServiceProvider() {
+  var $injector = angular.injector(['ng']);
   var predefinedRights = {};
   var currentRights = [];
   var currentValues = [];
+  var globalDebug = false;
 
   this.setPredefinedRights = function(value) {
     predefinedRights = value;
   };
 
-  this.$get = function SFReaccessServiceFactory() {
+  this.debug = function(value) {
+    globalDebug = value;
+  };
 
+  this.$get = ['$log', function SFReaccessServiceFactory($log) {
     var sfReaccessService = {
       setRights: function sfReaccessServiceSetRights(rights) {
         currentRights = rights;
@@ -17,13 +22,18 @@ angular.module('simplifield.reaccess', [])
       setValues: function sfReaccessServiceSetValues(values) {
         currentValues = values;
       },
-      test: function sfReaccessServiceTest(predefinedRight, templateValues) {
+      _debugging: globalDebug,
+      test: function sfReaccessServiceTest(predefinedRight, templateValues, debug) {
         var right = predefinedRights[predefinedRight];
         var path;
         var rightPath;
         if((!right) || 'undefined' == typeof right.path
           || 'undefined' == typeof right.methods
           || !right.methods.length) {
+          if(debug) {
+            $log.error('sfReaccess: ' + predefinedRight + ': No or invalid right' +
+              ' object (requiring path, methods properties).');
+          }
           return false;
         }
         rightPath = right.path;
@@ -31,17 +41,26 @@ angular.module('simplifield.reaccess', [])
           rightPath = rightPath.replace(/(.*\/|^):([a-z0-9_\-\.\*\@\#]+)(\/.*|$)/,
             function($, $1, $2, $3) {
               var values = getValues(templateValues, $2);
-              //console.log('rightPath values', values, templateValues, $2)
+              if(debug) {
+                $log.debug('sfReaccess: ' + predefinedRight + ': Found the' +
+                  ' templated value "' + $2 + '" in the predefined right,' +
+                  ' resolved it to the following values:', values);
+              }
               if(values.length) {
                 return $1 + values[0] + $3;
               }
               return '';
             });
         }
-        if(currentRights.some(function(currentRight) {
+        if(currentRights.some(function(currentRight, i) {
+          var result = false;
           if(!right.methods.every(function(method) {
             return -1 !== currentRight.methods.indexOf(method);
           })) {
+            if(debug) {
+              $log.debug('sfReaccess: ' + predefinedRight + ': ' + i + ': Methods' +
+                ' doesn\'t match.', right.methods, currentRight.methods);
+            }
             return false;
           }
           path = currentRight.path;
@@ -50,7 +69,11 @@ angular.module('simplifield.reaccess', [])
               path = path.replace(/(.*\/|^):([a-z0-9_\-\.\*\@\#]+)(\/.*|$)/,
                 function($, $1, $2, $3) {
                   var values = getValues(currentValues, $2);
-                  //console.log('path values', values, currentValues, $2)
+                  if(debug) {
+                    $log.debug('sfReaccess: ' + predefinedRight + ': ' + i +
+                      ' Found the templated value "' + $2 + '" in the current' +
+                      ' tested right, resolved it to the following values:', values);
+                  }
                   if(values.length) {
                     return $1 + (1 === values.length ?
                       escRegExp(values[0]) :
@@ -60,8 +83,12 @@ angular.module('simplifield.reaccess', [])
                 });
             }
           }
-          //console.log('path', path, 'rightPath', rightPath)
-          return path && new RegExp('^'+path+'$').test(rightPath);
+          result = path && new RegExp('^'+path+'$').test(rightPath)
+          if(debug) {
+            $log.debug('sfReaccess: ' + predefinedRight + ': ' + i + ': Testing "' +
+              + rightPath + '" against "/^'+path+'$/" returned', result);
+          }
+          return result;
         })) {
           return true;
         }
@@ -70,18 +97,24 @@ angular.module('simplifield.reaccess', [])
     };
 
     return sfReaccessService;
-  };
-}).filter('sfReaccess', ['sfReaccessService', function (sfReaccessService) {
-  return function(predefinedRights, templateValues) {
+  }];
+}).filter('sfReaccess', ['$log', 'sfReaccessService',
+  function ($log, sfReaccessService) {
+  return function(predefinedRights, templateValues, debug) {
+    debug = 'boolean' === typeof debug ? debug : sfReaccessService._debugging;
     predefinedRights = predefinedRights || [];
     if(!(predefinedRights instanceof Array)) {
       predefinedRights = [predefinedRights];
+    }
+    if(debug) {
+      $log.debug('sfReaccess: New filter execution:', predefinedRights, templateValues);
     }
     return predefinedRights.every(function(predefinedRight) {
       return sfReaccessService.test(
         predefinedRight,
         (templateValues instanceof Array ? templateValues :
-          (templateValues ? [templateValues] : []))
+          (templateValues ? [templateValues] : [])),
+        debug
       );
     });
   };

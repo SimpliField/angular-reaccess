@@ -86,6 +86,27 @@ sfReaccessService.setValues([{
 }]);
 ```
 
+## Debugging
+
+You can enable sfReaccess debug mode globally:
+
+ ```js
+angular.module('myApp')
+  .config(['sfReaccessServiceProvider', function(sfReaccessServiceProvider) {
+
+    // Set debug mode
+    $sfReaccessServiceProvider.debug(true);
+
+  }]);
+```
+
+Or locally as an argument to the angular filter:
+```html
+<button
+  ng-show="'USER_ADD' | sfReaccess: undefined : true"
+  ng-click="addUser()">Add a user</button>
+```
+
 ## Contribute
 To contribute to this project, first run the following to setup the development
  environment:

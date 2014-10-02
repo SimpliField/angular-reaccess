@@ -185,6 +185,49 @@ describe('sfReaccess', function () {
 
     });
 
+    describe('with multiple rights in filter input', function() {
+
+      beforeEach(function() {
+        // Creating a fake app
+        angular.module('fakeApp', ['simplifield.reaccess'])
+          .config(function(sfReaccessServiceProvider) {
+            sfReaccessServiceProvider.setPredefinedRights({
+              'A_MULTIPLE_RIGHT': [{
+                'path': '/foo',
+                methods: ['OPTIONS', 'HEAD', 'GET']
+              }, {
+                'path': '/bar',
+                methods: ['OPTIONS', 'HEAD', 'GET']
+              }]
+            });
+          });
+
+        module('fakeApp');
+      });
+
+      it('should return true if everything match',
+        inject(function($filter, $log, sfReaccessService) {
+
+        sfReaccessService.setRights([{
+          path: '/foo',
+          methods: ['OPTIONS', 'HEAD', 'GET']
+        }, {
+          path: '/bar',
+          methods: ['OPTIONS', 'HEAD', 'GET']
+        }]);
+
+        assert.equal($filter('sfReaccess')('A_MULTIPLE_RIGHT'), true);
+        $log.assertEmpty();
+
+        assert.equal($filter('sfReaccess')('A_MULTIPLE_RIGHT', undefined, true), true);
+        assert.equal($log.error.logs.length, 0);
+        assert.equal($log.debug.logs.length, 4);
+        $log.reset();
+
+      }));
+
+    });
+
     describe('with templated rights', function() {
 
       beforeEach(function() {

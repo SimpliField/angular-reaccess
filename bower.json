@@ -1,6 +1,12 @@
 {
     "name": "angular-reaccess",
+    "version": "0.1.0",
     "main": "./src/index.js",
+    "ignore": [
+      ".git*",
+      "node_modules",
+      "bower_components"
+    ],
     "keywords": [
         "angular",
         "access",

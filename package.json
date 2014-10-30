@@ -1,7 +1,6 @@
 {
   "name": "angular-reaccess",
   "version": "1.0.0",
-  "private": true,
   "author": "Nicolas Froidure (SimpliField)",
   "licenses": [
     {

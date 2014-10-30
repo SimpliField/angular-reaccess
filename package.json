@@ -1,6 +1,6 @@
 {
   "name": "angular-reaccess",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "author": "Nicolas Froidure (SimpliField)",
   "licenses": [
@@ -9,6 +9,7 @@
       "url": "https://github.com/SimpliField/angular-reaccess/blob/master/LICENSE"
     }
   ],
+  "main": "src/index.js",
   "scripts": {
     "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run",
     "dev": "./node_modules/karma/bin/karma start karma.dev.conf.js"

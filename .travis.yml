@@ -4,6 +4,7 @@ node_js:
 
 before_script:
   - npm install --dev
+  - bower install --dev
 
 script:
   - npm test

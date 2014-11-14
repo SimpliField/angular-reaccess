@@ -45,11 +45,11 @@ angular.module('simplifield.reaccess', ['ng'])
             while(/(.*\/|^):([a-z0-9_\-\.\*\@\#]+)(\/.*|$)/.test(rightPath)) {
               rightPath = rightPath.replace(/(.*\/|^):([a-z0-9_\-\.\*\@\#]+)(\/.*|$)/,
                 function($, $1, $2, $3) {
-                  var values = getValues(templateValues, $2);
+                  var values = getValues(templateValues.concat(currentValues), $2);
                   if(debug) {
                     $log.debug('sfReaccess: ' + predefinedRight + ': Found the' +
                       ' templated value "' + $2 + '" in the predefined right,' +
-                      ' resolved it to the following values:', values);
+                      ' resolved it to the following values:', values, templateValues.concat(currentValues));
                   }
                   if(values.length) {
                     return $1 + values[0] + $3;
@@ -77,7 +77,7 @@ angular.module('simplifield.reaccess', ['ng'])
                       if(debug) {
                         $log.debug('sfReaccess: ' + predefinedRight + ': ' + i +
                           ' Found the templated value "' + $2 + '" in the current' +
-                          ' tested right, resolved it to the following values:', values);
+                          ' tested right, resolved it to the following values:', values, currentValues);
                       }
                       if(values.length) {
                         return $1 + (1 === values.length ?
@@ -92,6 +92,7 @@ angular.module('simplifield.reaccess', ['ng'])
               if(debug) {
                 $log.debug('sfReaccess: ' + predefinedRight + ': ' + i + ': Testing "' +
                   rightPath + '" against "/^' + path.replace('/', '\\/') + '$/"' +
+                  ' (original path "' + currentRight.path + '")' +
                   ' led to ', result ? 'SUCCESS' : 'FAILURE');
               }
               return result;

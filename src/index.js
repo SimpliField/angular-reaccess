@@ -97,10 +97,10 @@ angular.module('simplifield.reaccess', ['ng'])
               }
               return result;
             })) {
-              return rightPath;
+              return true;
             }
             return null;
-          });
+          }) ? rightPath : null;
         } catch(err) {
           if(debug) {
             $log.debug('sfReaccess: ' + predefinedRight + ': FAILURE due "' +
@@ -110,7 +110,9 @@ angular.module('simplifield.reaccess', ['ng'])
         }
       },
       test: function sfReaccessServiceTest() {
-        return (sfReaccessService.match.apply(sfReaccessService, arguments) !== null);
+        var res = sfReaccessService.match.apply(sfReaccessService, arguments);
+
+        return (res !== null);
       }
     };
 

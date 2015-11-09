@@ -23,7 +23,7 @@ angular.module('simplifield.reaccess', ['ng'])
         currentValues = values;
       },
       _debugging: globalDebug,
-      test: function sfReaccessServiceTest(predefinedRight, templateValues, debug) {
+      match: function sfReaccessServiceMatch(predefinedRight, templateValues, debug) {
         var right;
         var path;
         var rightPath;
@@ -97,17 +97,20 @@ angular.module('simplifield.reaccess', ['ng'])
               }
               return result;
             })) {
-              return true;
+              return rightPath;
             }
-            return false;
+            return null;
           });
         } catch(err) {
           if(debug) {
             $log.debug('sfReaccess: ' + predefinedRight + ': FAILURE due "' +
               'to the following error:', err);
           }
-          return false;
+          return null;
         }
+      },
+      test: function sfReaccessServiceTest() {
+        return (sfReaccessService.match.apply(sfReaccessService, arguments) !== null);
       }
     };
 
@@ -168,4 +171,3 @@ function getValues(values, path) {
 function escRegExp(str) {
   return String(str).replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1');
 }
-

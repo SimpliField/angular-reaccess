@@ -9,6 +9,10 @@ angular.module('simplifield.reaccess', ['ng'])
   this.setPredefinedRights = function(value) {
     predefinedRights = value;
   };
+  
+  this.addPredifinedRights = function(value) {
+    predifinedRights = angular.extend({}, predifinedRights, value);
+  };
 
   this.debug = function(value) {
     globalDebug = value;

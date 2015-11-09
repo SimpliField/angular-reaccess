@@ -1,4 +1,4 @@
-module.exports = function(config){
+module.exports = function(config) {
   config.set({
     basePath : './',
 
@@ -7,8 +7,7 @@ module.exports = function(config){
     frameworks: ['mocha', 'sinon-chai'],
     browsers : ['PhantomJS'],
     preprocessors: { 'src/index.js': 'coverage' },
-    reporters: ['coverage'],
-    
+    reporters: ['mocha', 'coverage'],
     coverageReporter: {
       type : 'lcovonly',
       dir : 'coverage/'
@@ -25,5 +24,5 @@ module.exports = function(config){
       'src/index.js',
       'tests/**/*.mocha.js'
     ]
-})};
-
+  });
+};

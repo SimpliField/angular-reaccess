@@ -28,6 +28,7 @@ angular.module('simplifield.reaccess', ['ng'])
       },
       _debugging: globalDebug,
       match: function sfReaccessServiceMatch(predefinedRight, templateValues, debug) {
+        var rights;
         var right;
         var path;
         var rightPath;

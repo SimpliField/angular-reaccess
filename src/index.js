@@ -1,5 +1,13 @@
-angular.module('simplifield.reaccess', ['ng'])
-  .provider('sfReaccessService', function SFReaccessServiceProvider() {
+
+const moduleName = 'simplifield.reaccess';
+
+export default angular
+  .module(moduleName, ['ng'])
+  .provider('sfReaccessService', SFReaccessServiceProvider)
+  .filter('sfReaccess', ['$log', 'sfReaccessService', sfReaccessFilter])
+  .name;
+
+function SFReaccessServiceProvider() {
   var $injector = angular.injector(['ng']);
   var predefinedRights = {};
   var currentRights = [];
@@ -123,8 +131,9 @@ angular.module('simplifield.reaccess', ['ng'])
 
     return sfReaccessService;
   }];
-}).filter('sfReaccess', ['$log', 'sfReaccessService',
-  function ($log, sfReaccessService) {
+}
+
+function sfReaccessFilter($log, sfReaccessService) {
   return function(predefinedRights, templateValues, debug) {
     debug = 'boolean' === typeof debug ? debug : sfReaccessService._debugging;
     predefinedRights = predefinedRights || [];
@@ -140,7 +149,7 @@ angular.module('simplifield.reaccess', ['ng'])
       return sfReaccessService.test(predefinedRight, templateValues, debug);
     });
   };
-}]);
+}
 
 // Helpers
 function getValues(values, path) {
